@@ -1,0 +1,77 @@
+/* =========================================
+   遊戲內 UI 與 3D 場景樣式
+   ========================================= */
+:root {
+    --p1-color: #ff4757;
+    --cpu-color: #1e90ff;
+    --neon-green: #00ffcc;
+    --hud-font: 'Teko', sans-serif;
+    --ui-font: 'Noto Sans TC', sans-serif;
+    --score-font: 'Russo One', sans-serif;
+    --hud-color: var(--neon-green);
+    --boost-color: #ffaa00;
+}
+
+.ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; display: none; flex-direction: column; justify-content: space-between; }
+.header { display: flex; justify-content: space-between; align-items: flex-start; padding: 20px; background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%); }
+.header-right { display: flex; gap: 10px; pointer-events: auto; }
+
+.speedometer-container { position: relative; width: 180px; background: linear-gradient(90deg, rgba(0,0,0,0.6), transparent); border-left: 4px solid var(--hud-color); transform: skewX(-15deg); padding: 10px 20px; display: flex; flex-direction: column; justify-content: center; backdrop-filter: blur(2px); transition: all 0.3s; }
+.speedometer-container.style-minimal { background: rgba(255,255,255,0.1); border-left: 4px solid #fff; transform: none; border-radius: 8px; }
+.speedometer-container.style-minimal .stat-value { color: #fff; font-family: var(--ui-font); }
+.speedometer-container.style-racing { border-left: 4px solid #ff3333; background: linear-gradient(90deg, rgba(255,0,0,0.2), transparent); }
+.speedometer-container.style-racing .stat-value { color: #ff3333; font-style: italic; }
+
+.speed-info { display: flex; flex-direction: column; }
+.speed-label { color: #ddd; font-family: var(--ui-font); font-size: 14px; font-weight: 700; letter-spacing: 1px; transform: skewX(15deg); }
+.style-minimal .speed-label { transform: none; }
+.speed-value-wrap { transform: skewX(15deg); display: flex; align-items: baseline; }
+.style-minimal .speed-value-wrap { transform: none; }
+.stat-value { color: var(--hud-color); font-family: var(--hud-font); font-size: 48px; font-weight: 600; line-height: 0.8; transition: color 0.2s; }
+.speed-unit { color: #fff; font-size: 16px; margin-left: 5px; font-family: var(--ui-font); font-weight: bold; }
+
+.boost-meter-wrap { width: 100%; height: 8px; background: rgba(255, 255, 255, 0.2); margin-top: 8px; border-radius: 2px; transform: skewX(15deg); overflow: hidden; position: relative; }
+.style-minimal .boost-meter-wrap { transform: none; border-radius: 4px; }
+.boost-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff8800, #ffcc00); transform-origin: left; transform: scaleX(1); transition: transform 0.1s linear; box-shadow: 0 0 10px rgba(255, 170, 0, 0.6); }
+.boost-icon { position: absolute; right: 2px; top: -14px; font-size: 12px; color: var(--boost-color); font-weight: bold; text-shadow: 0 0 5px black; }
+
+.scoreboard-container { display: flex; flex-direction: column; align-items: center; pointer-events: auto; transform: translateY(-5px); }
+.scoreboard { display: flex; align-items: center; justify-content: center; background: linear-gradient(90deg, rgba(255, 71, 87, 0.15), rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.5) 60%, rgba(30, 144, 255, 0.15)); padding: 5px 60px; border-bottom: 1px solid rgba(255,255,255,0.15); border-radius: 0 0 20px 20px; backdrop-filter: blur(4px); }
+.team-score-box { position: relative; width: 60px; height: 60px; margin: 0 20px; overflow: hidden; }
+.score-digit { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-family: var(--score-font); font-size: 42px; font-style: italic; will-change: transform, opacity; }
+.p1-color { color: #ff6b6b; text-shadow: 0 0 15px rgba(255, 71, 87, 0.6); }
+.cpu-color { color: #4facfe; text-shadow: 0 0 15px rgba(30, 144, 255, 0.6); }
+.slide-out-up { animation: scoreSlideOut 0.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards; }
+.slide-in-up { animation: scoreSlideInPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes scoreSlideOut { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-120%); opacity: 0; } }
+@keyframes scoreSlideInPop { 0% { transform: translateY(120%) scale(0.5); opacity: 0; } 50% { transform: translateY(0) scale(1.6); opacity: 1; filter: brightness(2); } 100% { transform: translateY(0) scale(1); opacity: 1; filter: brightness(1); } }
+.vs-text { font-family: var(--hud-font); font-size: 24px; color: #ddd; font-style: italic; opacity: 0.8; }
+
+#goal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; pointer-events: none; z-index: 3000; opacity: 0; transition: opacity 0.2s; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); }
+#goal-text { font-family: 'Russo One', sans-serif; font-size: 120px; color: #fff; text-shadow: 0 0 30px rgba(0,0,0,0.8), 0 0 60px currentColor; transform: scale(0.5); opacity: 0; }
+.goal-anim { animation: goalTextPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes goalTextPop { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1.0); opacity: 1; } }
+
+.world-label { position: absolute; pointer-events: none; display: none; z-index: 10; transform: translate(-50%, -100%); }
+#p1-label { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 18px solid var(--neon-green); filter: drop-shadow(0 0 8px var(--neon-green)); margin-top: -50px; animation: bounceArrow 1s infinite alternate; }
+@keyframes bounceArrow { from { transform: translate(-50%, -100%) translateY(0); } to { transform: translate(-50%, -100%) translateY(-8px); } }
+#cpu-label { font-size: 12px; font-weight: 900; color: #fff; padding: 3px 8px; border-radius: 4px; background: rgba(30, 144, 255, 0.7); border: 1px solid rgba(255,255,255,0.5); margin-top: -40px; }
+
+.controls-hint { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; color: #eee; font-size: 13px; line-height: 1.8; pointer-events: auto; transition: opacity 0.5s ease; opacity: 0.9; backdrop-filter: blur(2px); border-left: 3px solid #fff; z-index: 30; }
+.controls-hint.faded { opacity: 0.2; }
+.controls-hint:hover { opacity: 1 !important; }
+.key-badge { display: inline-block; padding: 1px 6px; margin: 0 3px; background: #555; border-radius: 4px; border-bottom: 2px solid #333; color: #fff; font-weight: bold; font-family: monospace; }
+
+.touch-interface { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; display: none; opacity: 0; transition: opacity 0.3s ease; }
+body.touch-active .touch-interface { display: block; opacity: 1; }
+body.touch-active .controls-hint { display: none; }
+.touch-zone-left { position: absolute; top: 0; left: 0; width: 50%; height: 100%; pointer-events: auto; }
+.joystick-base { width: 120px; height: 120px; background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 60%); border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; position: absolute; display: none; pointer-events: none; }
+.joystick-thumb { width: 50px; height: 50px; background: rgba(255,255,255,0.9); border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(0,0,0,0.5); }
+.btn-zone { position: absolute; bottom: 0; right: 0; width: 300px; height: 300px; pointer-events: none; }
+.action-btn { position: absolute; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; font-weight: 900; backdrop-filter: blur(5px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); user-select: none; pointer-events: auto; transition: transform 0.1s; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+.action-btn:active { transform: scale(0.92); filter: brightness(1.2); }
+.btn-gas { width: 110px; height: 110px; bottom: 40px; right: 30px; background: linear-gradient(135deg, #f39c12, #e67e22); border: 3px solid rgba(255,255,255,0.4); }
+.btn-jump { width: 90px; height: 90px; bottom: 150px; right: 80px; background: linear-gradient(135deg, #3498db, #2980b9); border: 3px solid rgba(255,255,255,0.4); }
+.btn-icon { font-size: 32px; display: block; margin-bottom: 0px; }
+.btn-label { font-size: 16px; opacity: 1; font-family: var(--ui-font); font-weight: 900; }

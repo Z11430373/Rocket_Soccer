@@ -1,0 +1,134 @@
+/* =========================================
+   主選單與模態視窗樣式
+   ========================================= */
+:root {
+    --primary-cyan: #00f3ff;
+    --primary-orange: #ff9d00;
+    --dark-bg: rgba(12, 20, 31, 0.95);
+    --ui-font: 'Noto Sans TC', sans-serif;
+    --tech-font: 'Rajdhani', sans-serif;
+    --neon-green: #00ffcc;
+}
+
+/* 主選單背景 */
+#main-menu-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    padding-left: 10%;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #0f1724 0%, #16213e 100%);
+    transition: opacity 0.5s ease;
+}
+
+#main-menu-overlay::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.menu-container { width: 450px; color: #fff; position: relative; z-index: 2; }
+
+/* 標題 */
+.game-title-main {
+    font-family: 'Russo One', sans-serif;
+    font-size: 5rem; margin: 0; font-style: italic; text-transform: uppercase;
+    line-height: 0.9;
+    background: linear-gradient(to right, #fff, #00f3ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(0, 243, 255, 0.4));
+}
+
+.game-subtitle {
+    font-size: 1.5rem; color: var(--primary-orange); font-weight: 900;
+    letter-spacing: 2px; margin-bottom: 40px; text-transform: uppercase;
+    font-family: var(--tech-font);
+}
+
+.version-tag {
+    position: absolute; bottom: 20px; right: 20px;
+    color: rgba(255,255,255,0.3); font-size: 12px; font-family: monospace;
+}
+
+/* 科技按鈕 */
+.tech-btn {
+    width: 100%; padding: 18px 25px; margin-bottom: 12px;
+    background: rgba(0, 243, 255, 0.05);
+    border: 1px solid rgba(0, 243, 255, 0.3);
+    border-left: 4px solid var(--primary-cyan);
+    color: #fff; font-family: var(--ui-font); font-size: 1.2rem; font-weight: 700;
+    text-align: left; cursor: pointer; position: relative; transition: all 0.2s ease;
+    clip-path: polygon(0 0, 100% 0, 100% 80%, 97% 100%, 0 100%);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.tech-btn:hover:not(.locked) {
+    background: var(--primary-cyan); color: #000;
+    transform: translateX(10px); box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+}
+.tech-btn.locked {
+    border-color: #444; border-left-color: #666; background: rgba(0,0,0,0.3);
+    color: #777; cursor: not-allowed;
+}
+.tech-btn.google-btn { border-color: #4285F4; border-left-color: #4285F4; background: rgba(66, 133, 244, 0.1); }
+.tech-btn.google-btn:hover { background: #4285F4; color: #fff; }
+
+.badge { font-size: 0.7rem; background: var(--primary-orange); color: #000; padding: 2px 6px; border-radius: 2px; font-weight: 900; font-family: var(--tech-font); }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; border: 2px solid #fff; display: none; }
+.api-status { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; background: #555; box-shadow: 0 0 5px #000; transition: background 0.3s; }
+.api-status.ready { background: #00ff00; box-shadow: 0 0 8px #00ff00; }
+.api-status.error { background: #ff0000; box-shadow: 0 0 8px #ff0000; }
+.api-status.offline { background: #aaaaaa; box-shadow: 0 0 8px #ffffff; }
+
+.menu-footer { margin-top: 30px; display: flex; gap: 15px; }
+.icon-btn {
+    background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7);
+    padding: 8px 16px; cursor: pointer; font-family: var(--ui-font); font-weight: bold;
+    font-size: 0.9rem; transition: 0.3s; display: flex; align-items: center; gap: 6px;
+}
+.icon-btn:hover { border-color: var(--primary-cyan); color: var(--primary-cyan); background: rgba(0, 243, 255, 0.05); }
+
+/* 載入畫面 */
+#loading {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f1724; 
+    z-index: 900; display: none;
+    flex-direction: column; justify-content: center; align-items: center;
+    color: white; transition: opacity 0.5s;
+}
+.spinner {
+    width: 50px; height: 50px; border: 4px solid rgba(0, 243, 255, 0.2);
+    border-top-color: var(--primary-cyan); border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 20px;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* 設定與版本視窗 */
+.modal-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.65); backdrop-filter: blur(8px);
+    z-index: 2000; display: none; justify-content: center; align-items: center; pointer-events: auto;
+}
+.modal-box {
+    background: #2c3e50; border: 1px solid #555; border-radius: 12px; width: 500px; max-width: 90%;
+    padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border-top: 4px solid var(--neon-green);
+    text-align: center; max-height: 80vh; overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.modal-title { font-size: 24px; font-weight: 900; color: #fff; margin-bottom: 25px; letter-spacing: 1px; }
+.setting-row { margin-bottom: 20px; }
+.segmented-label { text-align: left; color: #ccc; font-size: 14px; font-weight: 700; margin-bottom: 8px; display: block; }
+.segmented-control { display: flex; background: #202c39; padding: 4px; border-radius: 8px; width: 100%; border: 1px solid #444; box-sizing: border-box; }
+.segment-option { flex: 1; padding: 10px; text-align: center; cursor: pointer; border-radius: 6px; color: #888; font-weight: bold; font-size: 14px; transition: all 0.2s ease; user-select: none; }
+.segment-option:hover { color: #eee; background: rgba(255,255,255,0.05); }
+.segment-option.active { background: var(--neon-green); color: #000; box-shadow: 0 2px 10px rgba(0, 255, 204, 0.2); }
+.btn-confirm { width: 100%; padding: 14px; margin-top: 10px; background: linear-gradient(135deg, #00ffcc, #00aa88); border: none; border-radius: 6px; color: #000; font-weight: 900; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0, 255, 204, 0.2); font-family: var(--ui-font); }
+.btn-confirm:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.version-list { text-align: left; }
+.version-item { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #777; }
+.ver-tag { color: var(--neon-green); font-weight: bold; margin-bottom: 4px; display: block;}
+.ver-desc { font-size: 13px; color: #ccc; line-height: 1.4; white-space: pre-line; }

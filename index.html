@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>超能賽車足球：極速對決 (v18.015 Beta)</title>
+    
+    <!-- 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Noto+Sans+TC:wght@400;700;900&family=Russo+One&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 樣式表 -->
+    <link rel="stylesheet" href="HomePage.css">
+    <link rel="stylesheet" href="pvpPage.css">
+
+    <!-- 外部庫 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+    
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+</head>
+<body>
+
+    <!-- 主選單 -->
+    <div id="main-menu-overlay">
+        <div class="menu-container">
+            <h1 class="game-title-main">ROCKET<br>SOCCER</h1>
+            <div class="game-subtitle">極速對決</div>
+            
+            <div class="menu-group">
+                <button class="tech-btn" onclick="startGame('vs-ai')">
+                    <span>單人對決 (VS AI)</span>
+                    <span>▶</span>
+                </button>
+
+                <button class="tech-btn google-btn" id="btn-google-login" onclick="handleAuthClick()">
+                    <div style="display: flex; align-items: center;">
+                        <span id="api-indicator" class="api-status"></span>
+                        <span id="google-btn-text">登入 Google 帳戶 (雲端存檔)</span>
+                    </div>
+                    <span class="badge" id="save-status">未登入</span>
+                </button>
+                
+                <button class="tech-btn locked">
+                    <span>多人連線 (Multiplayer)</span>
+                    <span class="badge">開發中</span>
+                </button>
+            </div>
+
+            <div class="menu-footer">
+                <button class="icon-btn" onclick="openSettings()"><span>⚙️</span> 遊戲設定</button>
+                <button class="icon-btn" onclick="openVersionHistory()"><span>📜</span> 版本紀錄</button>
+            </div>
+            
+            <div class="version-tag">v18.015 Beta</div>
+        </div>
+    </div>
+
+    <!-- 設定視窗 -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-box">
+            <div class="modal-title">遊戲設定</div>
+            <div class="setting-row">
+                <label class="segmented-label">操控模式</label>
+                <div class="segmented-control" id="opt-control">
+                    <div class="segment-option active" data-val="keyboard">鍵盤控制</div>
+                    <div class="segment-option" data-val="touch">觸控搖桿</div>
+                </div>
+            </div>
+            <div class="setting-row">
+                <label class="segmented-label">地板材質風格</label>
+                <div class="segmented-control" id="opt-ground">
+                    <div class="segment-option active" data-val="tech">科技網格</div>
+                    <div class="segment-option" data-val="grass">足球草地</div>
+                    <div class="segment-option" data-val="asphalt">賽道瀝青</div>
+                </div>
+            </div>
+            <div class="setting-row">
+                <label class="segmented-label">足球樣式</label>
+                <div class="segmented-control" id="opt-ball">
+                    <div class="segment-option" data-val="minimal">精簡</div>
+                    <div class="segment-option active" data-val="standard">標準</div>
+                    <div class="segment-option" data-val="tech">科技</div>
+                </div>
+            </div>
+            <div class="setting-row">
+                <label class="segmented-label">儀表板風格</label>
+                <div class="segmented-control" id="opt-hud">
+                    <div class="segment-option active" data-val="tech">科技藍</div>
+                    <div class="segment-option" data-val="racing">熱血紅</div>
+                    <div class="segment-option" data-val="minimal">簡約白</div>
+                </div>
+            </div>
+             <div class="setting-row">
+                <label class="segmented-label">車子視覺特效</label>
+                <div class="segmented-control" id="opt-vfx">
+                    <div class="segment-option active" data-val="on">開啟</div>
+                    <div class="segment-option" data-val="off">關閉</div>
+                </div>
+            </div>
+            <button class="btn-confirm" style="margin-bottom: 10px; background: linear-gradient(135deg, #4285F4, #34A853);" onclick="saveGameToDrive()">☁️ 手動雲端同步</button>
+            <button class="btn-confirm" id="btn-confirm-settings">回到選單/遊戲</button>
+        </div>
+    </div>
+
+    <!-- 版本紀錄視窗 -->
+    <div class="modal-overlay" id="version-modal">
+        <div class="modal-box">
+            <div class="modal-title">開發日誌</div>
+            <div class="version-list" id="changelog-list"></div>
+            <button class="btn-confirm" onclick="document.getElementById('version-modal').style.display='none'">關閉</button>
+        </div>
+    </div>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <div style="font-size: 18px; font-weight: bold; color: var(--neon-green);">賽道載入中...</div>
+        <div style="font-size: 12px; color: #ccc; margin-top:5px;">初始化物理引擎與 3D 場景</div>
+    </div>
+
+    <div id="game-container"></div>
+    <div id="goal-overlay"><div id="goal-text">GOAL!</div></div>
+    <div id="p1-label" class="world-label"></div>
+    <div id="cpu-label" class="world-label">AI</div>
+
+    <!-- 遊戲 UI -->
+    <div class="ui-layer" id="game-ui">
+        <div class="header">
+            <div class="speedometer-container" id="speedometer">
+                <div class="speed-info">
+                    <div class="speed-label">速度</div>
+                    <div class="speed-value-wrap">
+                        <span id="speed-val" class="stat-value">0</span> <span class="speed-unit">KM/H</span>
+                    </div>
+                </div>
+                <div class="boost-meter-wrap">
+                    <div class="boost-icon">NITRO</div>
+                    <div class="boost-bar" id="boost-bar"></div>
+                </div>
+            </div>
+            <div class="scoreboard-container">
+                <div class="scoreboard">
+                    <div class="team-score-box" id="score-p1-box"><div class="score-digit p1-color">0</div></div>
+                    <div class="vs-text">VS</div>
+                    <div class="team-score-box" id="score-cpu-box"><div class="score-digit cpu-color">0</div></div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn-header" id="btn-fullscreen">⛶ 全螢幕</button>
+                <button class="btn-header" onclick="openSettings()">⚙️ 設定</button>
+            </div>
+        </div>
+        <div class="controls-hint" id="controls-hint">
+            <div><span class="key-badge">W</span><span class="key-badge">S</span> 油門 / 煞車</div>
+            <div><span class="key-badge">A</span><span class="key-badge">D</span> 轉向</div>
+            <div><span class="key-badge">SPACE</span> 跳躍 / 翻身</div>
+            <div><span class="key-badge">SHIFT</span> 氮氣加速 (消耗)</div>
+        </div>
+    </div>
+
+    <!-- 觸控介面 -->
+    <div class="touch-interface">
+        <div class="touch-zone-left" id="touch-zone-left"></div>
+        <div class="joystick-base" id="joystick-base"><div class="joystick-thumb" id="joystick-thumb"></div></div>
+        <div class="btn-zone">
+            <div class="action-btn btn-jump" id="btn-jump"><span class="btn-icon">▲</span><span class="btn-label">跳躍</span></div>
+            <div class="action-btn btn-gas" id="btn-gas"><span class="btn-icon">⚡</span><span class="btn-label">氮氣</span></div>
+        </div>
+    </div>
+
+    <!-- 遊戲邏輯腳本 (順序很重要) -->
+    <script src="AIdriveTo.js"></script>
+    <script src="PlayerCrilFunctions.js"></script>
+    <script src="AIPlayerCrilFunctions.js"></script>
+    <script src="pvpPage.js"></script>
+</body>
+</html>
